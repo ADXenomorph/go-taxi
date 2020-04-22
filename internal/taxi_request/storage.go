@@ -10,6 +10,9 @@ import (
 type RequestStorage struct {
 	data     sync.Map
 	counters sync.Map
+
+	openMutex sync.RWMutex
+	open []string
 }
 
 func NewStorage() *RequestStorage {
@@ -18,6 +21,7 @@ func NewStorage() *RequestStorage {
 
 func (rs *RequestStorage) Save(r *Request) {
 	rs.data.Store(r.ID, r)
+	rs.updateOpenList()
 }
 
 func (rs *RequestStorage) Get(requestId string) (*Request, bool) {
@@ -31,14 +35,21 @@ func (rs *RequestStorage) Get(requestId string) (*Request, bool) {
 }
 
 func (rs *RequestStorage) GetRandom() *Request {
-	open := rs.All(Open)
+	rs.openMutex.RLock()
+	defer rs.openMutex.RUnlock()
 
-	if len(open) == 0 {
+	if len(rs.open) == 0 {
 		return nil
 	}
 
 	rand.Seed(time.Now().Unix())
-	req := open[rand.Intn(len(open))]
+	id := rs.open[rand.Intn(len(rs.open))]
+
+	req, ok := rs.Get(id)
+
+	if !ok {
+		return nil
+	}
 
 	return req
 }
@@ -47,6 +58,16 @@ func (rs *RequestStorage) GetRandomAndCount() *Request {
 	req := rs.GetRandom()
 	rs.inc(req.ID)
 	return req
+}
+
+func (rs *RequestStorage) GetCounters() []string {
+	res := make([]string, 0)
+	rs.counters.Range(func(key interface{}, val interface{}) bool {
+		res = append(res, key.(string)+" - "+strconv.Itoa(val.(int)))
+		return true
+	})
+
+	return res
 }
 
 func (rs *RequestStorage) inc(requestId string) {
@@ -58,22 +79,15 @@ func (rs *RequestStorage) inc(requestId string) {
 	rs.counters.Store(requestId, val.(int)+1)
 }
 
-func (rs *RequestStorage) All(status Status) []*Request {
-	res := make([]*Request, 0)
+func (rs *RequestStorage) updateOpenList() {
+	rs.openMutex.Lock()
+	defer rs.openMutex.Unlock()
+
+	open := make([]string, 0)
 	rs.data.Range(func(key interface{}, val interface{}) bool {
-		res = append(res, val.(*Request))
+		open = append(open, val.(*Request).ID)
 		return true
 	})
 
-	return res
-}
-
-func (rs *RequestStorage) GetCounters() []string {
-	res := make([]string, 0)
-	rs.counters.Range(func(key interface{}, val interface{}) bool {
-		res = append(res, key.(string)+" - "+strconv.Itoa(val.(int)))
-		return true
-	})
-
-	return res
+	rs.open = open
 }
