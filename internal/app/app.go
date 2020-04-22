@@ -48,7 +48,7 @@ func (app *App) CreateRandomRequest() *taxi_request.Request {
 }
 
 func (app *App) CreateInitialRequests() {
-	for i := 1; i <= 50; i++ {
+	for i := 0; i < 50; i++ {
 		app.CreateRandomRequest()
 	}
 }

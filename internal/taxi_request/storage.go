@@ -11,7 +11,7 @@ type RequestStorage struct {
 	data     sync.Map
 	counters sync.Map
 
-	openMutex sync.RWMutex
+	sync.RWMutex
 	open []string
 }
 
@@ -35,14 +35,14 @@ func (rs *RequestStorage) Get(requestId string) (*Request, bool) {
 }
 
 func (rs *RequestStorage) GetRandom() *Request {
-	rs.openMutex.RLock()
-	defer rs.openMutex.RUnlock()
+	rs.RLock()
+	defer rs.RUnlock()
 
 	if len(rs.open) == 0 {
 		return nil
 	}
 
-	rand.Seed(time.Now().Unix())
+	rand.Seed(time.Now().UnixNano())
 	id := rs.open[rand.Intn(len(rs.open))]
 
 	req, ok := rs.Get(id)
@@ -80,8 +80,8 @@ func (rs *RequestStorage) inc(requestId string) {
 }
 
 func (rs *RequestStorage) updateOpenList() {
-	rs.openMutex.Lock()
-	defer rs.openMutex.Unlock()
+	rs.Lock()
+	defer rs.Unlock()
 
 	open := make([]string, 0)
 	rs.data.Range(func(key interface{}, val interface{}) bool {
