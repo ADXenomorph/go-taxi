@@ -52,3 +52,29 @@ Points that will decrease the grade:
     az - 1
     br - 2
 ```
+
+# Usage
+
+Build:
+```
+make build
+```
+
+Run:
+```
+./taxid
+```
+
+Test:
+```
+make test
+```
+
+Benchmarks:
+```
+make bench
+make bench-race
+make apache-bench
+make wrk
+```
+

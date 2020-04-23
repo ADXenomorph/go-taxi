@@ -1,7 +1,10 @@
 package main_test
 
 import (
+	"log"
+	"runtime"
 	"testing"
+	"time"
 
 	"github.com/buaazp/fasthttprouter"
 	"github.com/valyala/fasthttp"
@@ -23,10 +26,32 @@ func TestMain(m *testing.M) {
 
 	router = main.CreateRouter(app)
 
-	ln := fasthttputil.NewInmemoryListener()
-	fasthttp.Serve(ln, router.Handler)
+	ln = fasthttputil.NewInmemoryListener()
+
+	serverCh := make(chan struct{})
+	go func() {
+		if err := fasthttp.Serve(ln, router.Handler); err != nil {
+			fail("unexpected error: %s", err)
+		}
+		close(serverCh)
+	}()
 
 	m.Run()
+
+	select {
+	case <-serverCh:
+	case <-time.After(time.Second):
+		fail("server timeout")
+	}
+
+	// if err := ln.Close(); err != nil {
+	// 	fail("unexpected error: %s", err)
+	// }
+}
+
+func fail(format string, v ...interface{}) {
+	log.Fatalf(format, v...)
+	runtime.Goexit()
 }
 
 func BenchmarkMainParallel(b *testing.B) {
@@ -34,17 +59,35 @@ func BenchmarkMainParallel(b *testing.B) {
 
 	b.RunParallel(func(pb *testing.PB) {
 		for pb.Next() {
-			makeRequest(b)
+			makeRequest(ln)
 		}
 	})
 }
 
-func makeRequest(b *testing.B) {
+func TestStuff(t *testing.T) {
+	clientCh := make(chan struct{})
+	go func() {
+		makeRequest(ln)
+		close(clientCh)
+	}()
+
+	select {
+	case <-clientCh:
+	case <-time.After(time.Second):
+		t.Fatal("timeout")
+	}
+}
+
+func makeRequest(ln *fasthttputil.InmemoryListener) {
 	c, err := ln.Dial()
 	if err != nil {
-		b.Errorf("unexpected error: %s", err)
+		fail("unexpected error: %s", err)
 	}
 	if _, err = c.Write([]byte("GET /request HTTP/1.1\r\nHost: localhost:8080\r\n\r\n")); err != nil {
-		b.Errorf("unexpected error: %s", err)
+		fail("unexpected error: %s", err)
 	}
+	if err = c.Close(); err != nil {
+		fail("unexpected error: %s", err)
+	}
+	log.Println("make request")
 }

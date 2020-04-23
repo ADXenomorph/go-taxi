@@ -20,7 +20,15 @@ func main() {
 
 	router := CreateRouter(app)
 
-	log.Fatal(fasthttp.ListenAndServe(":8080", router.Handler))
+	log.Print("Starting HTTP server on :8080")
+	go func() {
+		if err := fasthttp.ListenAndServe(":8080", router.Handler); err != nil {
+			log.Fatalf("error in ListenAndServe: %s", err)
+		}
+	}()
+
+	// Wait forever
+	select {}
 }
 
 func CreateRouter(app *taxi.App) *fasthttprouter.Router {
