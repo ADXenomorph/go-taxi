@@ -112,6 +112,14 @@ All benchmarks were run on Intel(R) Core(TM) i7-8550U CPU @ 1.80GHz with 16 GB R
 go test -benchmem -bench=. -cpu=1,2,3,4 ./...
 ```
 
+Initial implementation of main request for comparison:
+```
+BenchmarkGetRandomRequest     	  112736	      9785 ns/op	    1056 B/op	      10 allocs/op
+BenchmarkGetRandomRequest-2   	  123648	      9660 ns/op	    1056 B/op	      10 allocs/op
+BenchmarkGetRandomRequest-3   	  119479	     10081 ns/op	    1056 B/op	      10 allocs/op
+BenchmarkGetRandomRequest-4   	   96632	     10541 ns/op	    1056 B/op	      10 allocs/op
+```
+
 Main request that returns random taxi request:
 ```
 BenchmarkGetRandomRequest     	 4112386	       289 ns/op	      40 B/op	       3 allocs/op
@@ -155,52 +163,104 @@ BenchmarkGetRandomAndCount-4   	 4556630	       273 ns/op	      40 B/op	       3
 
 ### Apache bench
 
+Initial implementation: 
+```
+ab -n 30000 -c 500 localhost:8080/request
+
+Concurrency Level:      500
+Time taken for tests:   14.477 seconds
+Complete requests:      30000
+Failed requests:        0
+Total transferred:      3540000 bytes
+HTML transferred:       60000 bytes
+Requests per second:    2072.30 [#/sec] (mean)
+Time per request:       241.278 [ms] (mean)
+Time per request:       0.483 [ms] (mean, across all concurrent requests)
+Transfer rate:          238.80 [Kbytes/sec] received
+
+Connection Times (ms)
+              min  mean[+/-sd] median   max
+Connect:        0   19 146.1      0    3051
+Processing:     2  114 973.5     25   13459
+Waiting:        2  114 973.5     25   13459
+Total:         10  133 1070.2     25   14470
+
+Percentage of the requests served within a certain time (ms)
+  50%     25
+  66%     26
+  75%     26
+  80%     27
+  90%     28
+  95%     29
+  98%     34
+  99%   1468
+ 100%  14470 (longest request)
+```
+
+
+Latest: 
 ```
 ab -n 50000 -c 1000 localhost:8080/request
 
 Concurrency Level:      1000
-Time taken for tests:   2.659 seconds
+Time taken for tests:   2.343 seconds
 Complete requests:      50000
 Failed requests:        0
 Total transferred:      7750000 bytes
 HTML transferred:       100000 bytes
-Requests per second:    18801.62 [#/sec] (mean)
-Time per request:       53.187 [ms] (mean)
-Time per request:       0.053 [ms] (mean, across all concurrent requests)
-Transfer rate:          2845.95 [Kbytes/sec] received
+Requests per second:    21343.78 [#/sec] (mean)
+Time per request:       46.852 [ms] (mean)
+Time per request:       0.047 [ms] (mean, across all concurrent requests)
+Transfer rate:          3230.75 [Kbytes/sec] received
 
 Connection Times (ms)
               min  mean[+/-sd] median   max
-Connect:        0   39 179.8      4    1052
-Processing:     2   12  39.7      6     857
-Waiting:        1   10  39.5      4     854
-Total:          4   51 204.1     11    1901
+Connect:        0   38 183.1      3    1049
+Processing:     1    6  12.4      4     219
+Waiting:        1    4  12.0      2     213
+Total:          5   44 190.0      8    1228
 
 Percentage of the requests served within a certain time (ms)
-  50%     11
-  66%     14
-  75%     21
-  80%     28
-  90%     38
-  95%     43
-  98%   1056
-  99%   1257
- 100%   1901 (longest request)
+  50%      8
+  66%     10
+  75%     11
+  80%     11
+  90%     12
+  95%     29
+  98%   1053
+  99%   1064
+ 100%   1228 (longest request)
 ```
 
 ### Wrk
 
 ```
 wrk -t 4 -c 16 -d 10 http://localhost:8080/request
+```
 
+Initial implementation: 
+```
 Running 10s test @ http://localhost:8080/request
   4 threads and 16 connections
   Thread Stats   Avg      Stdev     Max   +/- Stdev
-    Latency   530.32us    1.60ms  40.98ms   94.43%
-    Req/Sec    20.35k     2.48k   25.21k    69.75%
-  810330 requests in 10.02s, 105.10MB read
-Requests/sec:  80909.39
-Transfer/sec:     10.49MB
+    Latency     1.62ms    1.56ms  18.90ms   87.40%
+    Req/Sec     3.04k   333.44     6.17k    83.33%
+  121429 requests in 10.10s, 13.66MB read
+Requests/sec:  12022.63
+Transfer/sec:      1.35MB
+
+```
+
+```
+Running 10s test @ http://localhost:8080/request
+  4 threads and 16 connections
+  Thread Stats   Avg      Stdev     Max   +/- Stdev
+    Latency   282.54us    0.93ms  20.52ms   94.14%
+    Req/Sec    60.51k     6.14k   77.90k    71.75%
+  2408609 requests in 10.01s, 312.40MB read
+Requests/sec: 240613.28
+Transfer/sec:     31.21MB
+
 ```
 
 ## Test coverage

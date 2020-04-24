@@ -3,7 +3,7 @@
 TMP_COVER:=$(shell mktemp)
 
 build: ## Build the binary
-	go build -race ./cmd/taxid/taxid.go
+	go build ./cmd/taxid/taxid.go
 
 test: ## Run tests
 	go clean -testcache && go test ./... -v
