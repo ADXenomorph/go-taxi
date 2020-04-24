@@ -1,3 +1,4 @@
+// A simple taxi-like app, that serves as a high-load app demonstration using golang.
 package main
 
 import (
@@ -14,7 +15,7 @@ import (
 
 func main() {
 	app := taxi.NewApp(taxi_request.NewStorage())
-	
+
 	// Create initial 50 taxi requests
 	app.CreateInitialRequests()
 
@@ -35,7 +36,7 @@ func main() {
 	select {}
 }
 
-// CreateRouter sets up API mapping handlers and returns the router
+// CreateRouter sets up API mapping handlers and returns the router.
 func CreateRouter(app *taxi.App) *fasthttprouter.Router {
 	r := fasthttprouter.New()
 

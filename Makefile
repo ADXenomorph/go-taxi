@@ -1,4 +1,4 @@
-.PHONY: build test bench bench-race apache-bench wrk cover cover-html help
+.PHONY: build test bench bench-race apache-bench wrk cover cover-html help godoc
 
 TMP_COVER:=$(shell mktemp)
 
@@ -33,6 +33,12 @@ cover: ## Show coverage in CLI
 
 cover-html: ## Show coverage in browser
 	go test -coverprofile=${TMP_COVER} ./... && go tool cover -html=${TMP_COVER} && unlink ${TMP_COVER}
+
+godoc: ## Starts godoc server
+	godoc -http=:6060 &
+	xdg-open http://localhost:6060/pkg/github.com/ADXenomorph/go-taxi/?m=all \
+	&& sleep 0.1 \
+	&& echo "Dont forget to stop the godoc server: pkill godoc"
 
 # Absolutely awesome: http://marmelab.com/blog/2016/02/29/auto-documented-makefile.html
 help:
