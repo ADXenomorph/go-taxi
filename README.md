@@ -207,7 +207,7 @@ Transfer/sec:     10.49MB
 
 ```
 github.com/ADXenomorph/go-taxi/cmd/taxid/taxid.go:16:				main			0.0%
-github.com/ADXenomorph/go-taxi/cmd/taxid/taxid.go:40:				CreateRouter		100.0%
+github.com/ADXenomorph/go-taxi/cmd/taxid/taxid.go:40:				CreateRouter		66.7%
 github.com/ADXenomorph/go-taxi/internal/taxi/taxi.go:25:			NewApp			100.0%
 github.com/ADXenomorph/go-taxi/internal/taxi/taxi.go:31:			CreateRequest		100.0%
 github.com/ADXenomorph/go-taxi/internal/taxi/taxi.go:40:			CancelRequest		100.0%
@@ -228,5 +228,5 @@ github.com/ADXenomorph/go-taxi/internal/taxi_request/storage.go:76:		GetRandomAn
 github.com/ADXenomorph/go-taxi/internal/taxi_request/storage.go:88:		GetCounters		100.0%
 github.com/ADXenomorph/go-taxi/internal/taxi_request/storage.go:98:		inc			100.0%
 github.com/ADXenomorph/go-taxi/internal/taxi_request/storage.go:107:		updateOpenList		100.0%
-total:										(statements)		83.1%
+total:										(statements)		80.7%
 ```
