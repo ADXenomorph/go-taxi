@@ -4,6 +4,10 @@ Test task to implement a taxi service using Golang.
 Imagine you're writing backend for a taxi service and your simplified REST API will
 return current taxi requests or request analytics.
 
+[Requirements](#requirements)
+[Usage](#usage)
+[Benchmarks](#benchmarks)
+
 # Requirements
 Implement a small service, that stores and handles taxi requests.
 A taxi request is 2 latin letters (az, yu, br, qq etc.).
@@ -55,6 +59,8 @@ Points that will decrease the grade:
 
 # Usage
 
+Run `make` to get a list of all make targets
+
 Build:
 ```
 make build
@@ -70,6 +76,12 @@ Test:
 make test
 ```
 
+Show test coverage:
+```
+make cover
+make cover-html
+```
+
 Benchmarks:
 ```
 make bench
@@ -77,4 +89,12 @@ make bench-race
 make apache-bench
 make wrk
 ```
+
+Open godoc:
+```
+make godoc
+```
+Dont forget to kill godoc process after it
+
+# Benchmarks
 

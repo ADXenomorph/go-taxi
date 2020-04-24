@@ -10,7 +10,7 @@ import (
 // RequestStorage stores taxi requests and their statistic counters
 type RequestStorage struct {
 	// data stores taxi requests
-	data     sync.Map
+	data sync.Map
 	// counters store taxi requests statistic counters
 	counters sync.Map
 
@@ -66,7 +66,7 @@ func (rs *RequestStorage) getRandomId() string {
 		return ""
 	}
 
-	// fastrand usage allowed to reduce operation time from 8000ns to 30ns
+	// fastrand usage allowed to reduce operation time from 8000ns to 80ns
 	id := rs.open[fastrand.Uint32n(uint32(len(rs.open)))]
 
 	return id
