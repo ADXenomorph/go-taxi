@@ -14,12 +14,16 @@ import (
 
 func main() {
 	app := taxi.NewApp(taxi_request.NewStorage())
+	
+	// Create initial 50 taxi requests
 	app.CreateInitialRequests()
 
+	// Constantly cancel and add new requests to simulate incoming changes
 	go app.SimulateChanges()
 
 	router := CreateRouter(app)
 
+	// Start the web server
 	log.Print("Starting HTTP server on :8080")
 	go func() {
 		if err := fasthttp.ListenAndServe(":8080", router.Handler); err != nil {
@@ -31,6 +35,7 @@ func main() {
 	select {}
 }
 
+// CreateRouter sets up API mapping handlers and returns the router
 func CreateRouter(app *taxi.App) *fasthttprouter.Router {
 	r := fasthttprouter.New()
 
