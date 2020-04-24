@@ -56,7 +56,11 @@ func (rs *RequestStorage) GetRandom() *Request {
 
 func (rs *RequestStorage) GetRandomAndCount() *Request {
 	req := rs.GetRandom()
-	rs.inc(req.ID)
+
+	if req != nil {
+		rs.inc(req.ID)
+	}
+
 	return req
 }
 

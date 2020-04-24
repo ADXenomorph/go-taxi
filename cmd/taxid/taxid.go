@@ -8,7 +8,7 @@ import (
 	"github.com/buaazp/fasthttprouter"
 	"github.com/valyala/fasthttp"
 
-	taxi "github.com/ADXenomorph/go-taxi/internal/app"
+	"github.com/ADXenomorph/go-taxi/internal/taxi"
 	"github.com/ADXenomorph/go-taxi/internal/taxi_request"
 )
 

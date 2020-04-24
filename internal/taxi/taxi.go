@@ -1,4 +1,4 @@
-package app
+package taxi
 
 import (
 	"errors"
@@ -55,6 +55,11 @@ func (app *App) CreateInitialRequests() {
 
 func (app *App) CancelRandomRequest() {
 	req := app.storage.GetRandom()
+
+	if req == nil {
+		return
+	}
+
 	app.CancelRequest(req.ID)
 }
 

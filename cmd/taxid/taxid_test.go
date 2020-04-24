@@ -5,7 +5,7 @@ import (
 	"time"
 
 	main "github.com/ADXenomorph/go-taxi/cmd/taxid"
-	taxi "github.com/ADXenomorph/go-taxi/internal/app"
+	"github.com/ADXenomorph/go-taxi/internal/taxi"
 	"github.com/ADXenomorph/go-taxi/internal/taxi_request"
 
 	"github.com/valyala/fasthttp"
@@ -14,6 +14,7 @@ import (
 
 func TestAppServer(t *testing.T) {
 	app := taxi.NewApp(taxi_request.NewStorage())
+	app.CreateInitialRequests()
 
 	router := main.CreateRouter(app)
 
@@ -29,16 +30,8 @@ func TestAppServer(t *testing.T) {
 
 	clientCh := make(chan struct{})
 	go func() {
-		c, err := ln.Dial()
-		if err != nil {
-			t.Errorf("unexpected error: %s", err)
-		}
-		if _, err = c.Write([]byte("GET /request HTTP/1.1\r\nHost: aa\r\n\r\n")); err != nil {
-			t.Errorf("unexpected error: %s", err)
-		}
-		if err = c.Close(); err != nil {
-			t.Errorf("unexpected error: %s", err)
-		}
+		makeRequest(ln, t, "/request")
+		makeRequest(ln, t, "/admin/requests")
 		close(clientCh)
 	}()
 
@@ -56,5 +49,18 @@ func TestAppServer(t *testing.T) {
 	case <-serverCh:
 	case <-time.After(time.Second):
 		t.Fatal("timeout")
+	}
+}
+
+func makeRequest(ln *fasthttputil.InmemoryListener, t *testing.T, url string) {
+	c, err := ln.Dial()
+	if err != nil {
+		t.Errorf("unexpected error: %s", err)
+	}
+	if _, err = c.Write([]byte("GET " + url + " HTTP/1.1\r\nHost: aa\r\n\r\n")); err != nil {
+		t.Errorf("unexpected error: %s", err)
+	}
+	if err = c.Close(); err != nil {
+		t.Errorf("unexpected error: %s", err)
 	}
 }
