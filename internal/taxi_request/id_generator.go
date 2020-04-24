@@ -1,18 +1,15 @@
 package taxi_request
 
 import (
-	"math/rand"
-	"time"
+	"github.com/valyala/fastrand"
 )
 
 var letters = []rune("abcdefghijklmnopqrstuvwxyz")
 
 func GenerateRequestId() string {
-	rand.Seed(time.Now().UnixNano())
-
 	b := make([]rune, 2)
 	for i := range b {
-		b[i] = letters[rand.Intn(len(letters))]
+		b[i] = letters[fastrand.Uint32n(uint32(len(letters)))]
 	}
 	return string(b)
 }

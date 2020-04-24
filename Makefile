@@ -1,3 +1,5 @@
+.PHONY: build test bench bench-race apache-bench wrk cover cover-html help
+
 TMP_COVER:=$(shell mktemp)
 
 build: ## Build the binary
@@ -7,10 +9,10 @@ test: ## Run tests
 	go clean -testcache && go test ./... -v
 
 bench: ## Runs parallel benchmark
-	go test -bench=. -cpu=1,2,3,4 ./...
+	go test -benchmem -bench=. -cpu=1,2,3,4 ./...
 
 bench-race: ## Runs parallel benchmark with race detector
-	go test -bench=. -race -cpu=1,2,3,4 ./...
+	go test -benchmem -bench=. -race -cpu=1,2,3,4 ./...
 
 apache-bench: build ## Runs apache bench
 	./taxid & 
@@ -31,7 +33,6 @@ cover: ## Show coverage in CLI
 
 cover-html: ## Show coverage in browser
 	go test -coverprofile=${TMP_COVER} ./... && go tool cover -html=${TMP_COVER} && unlink ${TMP_COVER}
-
 
 # Absolutely awesome: http://marmelab.com/blog/2016/02/29/auto-documented-makefile.html
 help:

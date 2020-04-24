@@ -7,4 +7,5 @@ require (
 	github.com/julienschmidt/httprouter v1.3.0
 	github.com/stretchr/testify v1.5.1
 	github.com/valyala/fasthttp v1.12.0
+	github.com/valyala/fastrand v1.0.0
 )

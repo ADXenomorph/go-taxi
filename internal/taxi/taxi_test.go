@@ -125,3 +125,14 @@ func TestCancelRandomRequest(t *testing.T) {
 	assert.NotNil(t, req)
 	assert.Equal(t, taxi_request.Cancelled, req.Status)
 }
+
+func BenchmarkGetRandomRequest(b *testing.B) {
+	app := taxi.NewApp(taxi_request.NewStorage())
+	app.CreateInitialRequests()
+
+	b.ResetTimer()
+
+	for i := 0; i < b.N; i++ {
+        app.GetRandomRequest()
+    }
+}

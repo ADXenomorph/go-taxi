@@ -124,3 +124,42 @@ func TestGetCountersWithRequestAndCounters(t *testing.T) {
 	assert.NotNil(t, res)
 	assert.Len(t, res, 1)
 }
+
+func BenchmarkGet(b *testing.B) {
+	s := taxi_request.NewStorage()
+	s.Save(taxi_request.NewRequest("aa"))
+
+	b.ResetTimer()
+
+	for i := 0; i < b.N; i++ {
+		s.Get("aa")
+	}
+}
+
+func BenchmarkGetRandom(b *testing.B) {
+	s := taxi_request.NewStorage()
+
+	for i := 0; i < 50; i++ {
+		s.Save(taxi_request.NewRequest(taxi_request.GenerateRequestId()))
+	}
+
+	b.ResetTimer()
+
+	for i := 0; i < b.N; i++ {
+		s.GetRandom()
+	}
+}
+
+func BenchmarkGetRandomAndCount(b *testing.B) {
+	s := taxi_request.NewStorage()
+
+	for i := 0; i < 50; i++ {
+		s.Save(taxi_request.NewRequest(taxi_request.GenerateRequestId()))
+	}
+
+	b.ResetTimer()
+
+	for i := 0; i < b.N; i++ {
+		s.GetRandomAndCount()
+	}
+}

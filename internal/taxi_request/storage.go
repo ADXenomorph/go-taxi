@@ -1,10 +1,10 @@
 package taxi_request
 
 import (
-	"math/rand"
 	"strconv"
 	"sync"
-	"time"
+
+	"github.com/valyala/fastrand"
 )
 
 type RequestStorage struct {
@@ -35,15 +35,11 @@ func (rs *RequestStorage) Get(requestId string) (*Request, bool) {
 }
 
 func (rs *RequestStorage) GetRandom() *Request {
-	rs.RLock()
-	defer rs.RUnlock()
+	id := rs.getRandomId()
 
-	if len(rs.open) == 0 {
+	if id == "" {
 		return nil
 	}
-
-	rand.Seed(time.Now().UnixNano())
-	id := rs.open[rand.Intn(len(rs.open))]
 
 	req, ok := rs.Get(id)
 
@@ -52,6 +48,19 @@ func (rs *RequestStorage) GetRandom() *Request {
 	}
 
 	return req
+}
+
+func (rs *RequestStorage) getRandomId() string {
+	rs.RLock()
+	defer rs.RUnlock()
+
+	if len(rs.open) == 0 {
+		return ""
+	}
+
+	id := rs.open[fastrand.Uint32n(uint32(len(rs.open)))]
+
+	return id
 }
 
 func (rs *RequestStorage) GetRandomAndCount() *Request {
