@@ -10,8 +10,14 @@ return current taxi requests or request analytics.
 - [Usage](#usage)
 - [Benchmarks](#benchmarks)
   - [Golang benchmarks](#golang-benchmarks)
+    - [Initial implementation](#initial-implementation)
+    - [Current](#current)
   - [Apache bench](#apache-bench)
+    - [Initial implementation](#initial-implementation-1)
+    - [Current](#current-1)
   - [Wrk](#wrk)
+    - [Initial implementation](#initial-implementation-2)
+    - [Current](#current-2)
 - [Test coverage](#test-coverage)
 
 ## Requirements
@@ -112,6 +118,8 @@ All benchmarks were run on Intel(R) Core(TM) i7-8550U CPU @ 1.80GHz with 16 GB R
 go test -benchmem -bench=. -cpu=1,2,3,4 ./...
 ```
 
+#### Initial implementation
+
 Initial implementation of main request for comparison:
 ```
 BenchmarkGetRandomRequest     	  112736	      9785 ns/op	    1056 B/op	      10 allocs/op
@@ -119,6 +127,8 @@ BenchmarkGetRandomRequest-2   	  123648	      9660 ns/op	    1056 B/op	      10 
 BenchmarkGetRandomRequest-3   	  119479	     10081 ns/op	    1056 B/op	      10 allocs/op
 BenchmarkGetRandomRequest-4   	   96632	     10541 ns/op	    1056 B/op	      10 allocs/op
 ```
+
+#### Current
 
 Main request that returns random taxi request:
 ```
@@ -163,7 +173,8 @@ BenchmarkGetRandomAndCount-4   	 4556630	       273 ns/op	      40 B/op	       3
 
 ### Apache bench
 
-Initial implementation: 
+#### Initial implementation
+
 ```
 ab -n 30000 -c 500 localhost:8080/request
 
@@ -197,8 +208,8 @@ Percentage of the requests served within a certain time (ms)
  100%  14470 (longest request)
 ```
 
+#### Current
 
-Latest: 
 ```
 ab -n 50000 -c 1000 localhost:8080/request
 
@@ -238,7 +249,8 @@ Percentage of the requests served within a certain time (ms)
 wrk -t 4 -c 16 -d 10 http://localhost:8080/request
 ```
 
-Initial implementation: 
+#### Initial implementation
+
 ```
 Running 10s test @ http://localhost:8080/request
   4 threads and 16 connections
@@ -251,6 +263,7 @@ Transfer/sec:      1.35MB
 
 ```
 
+#### Current
 ```
 Running 10s test @ http://localhost:8080/request
   4 threads and 16 connections
